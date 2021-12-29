@@ -1,6 +1,5 @@
-### Exemplo de Readme para o seu projeto
 
-# api-sentimentos
+# api-StringToBinary
 
 Projeto que sobe um Container e, neste, uma API RESTful com o Swagger
 
@@ -22,5 +21,6 @@ docker-compose up
 ## Authors
 
 * **Patrick Luiz** - *Initial work*
+* **Victoria Marques** - *Adaptation*
 
 ## Exemplo de template copiado de: https://gist.github.com/PurpleBooth/109311bb0361f32d87a2
