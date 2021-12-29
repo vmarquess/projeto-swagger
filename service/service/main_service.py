@@ -3,65 +3,57 @@ import json
 from loguru import logger
 from service.constants import mensagens
 import pandas as pd
-import numpy as np
-
-from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
+# import numpy as np
 
 
-class SentimentosService():
+class BinaryService():
 
     def __init__(self):
-        logger.debug(mensagens.INICIO_LOAD_MODEL)
-        self.load_model()
+        logger.debug(mensagens.INICIO_LOAD_SERVICO)
+        self.load_servico()
 
     def load_servico(self):
+
         """"
-        Carrega o servico a ser usado
+        Carrega o serviço a ser usado
         """
 
-        self.model = SentimentIntensityAnalyzer()
-
-        logger.debug(mensagens.FIM_LOAD_MODEL)
+        logger.debug(mensagens.FIM_LOAD_SERVICO)
 
     def executar_rest(self, texts):
         response = {}
 
-        logger.debug(mensagens.INICIO_PREDICT)
+        logger.debug(mensagens.INICIO_SERVICO)
         start_time = time.time()
 
-        response_predicts = self.buscar_predicao(texts['textoMensagem'])
+        response_predicts = self.toBinary(texts['textoMensagem'])
 
-        logger.debug(mensagens.FIM_PREDICT)
-        logger.debug(f"Fim de todas as predições em {time.time()-start_time}")
+        logger.debug(mensagens.FIM_SERVICO)
+        logger.debug(f"Fim de todas as conversões em {time.time()-start_time}")
 
         df_response = pd.DataFrame(texts, columns=['textoMensagem'])
-        df_response['predict'] = response_predicts
+        df_response['binary result'] = response_predicts
 
         df_response = df_response.drop(columns=['textoMensagem'])
 
-        response = {"listaClassificacoes": json.loads(df_response.to_json(orient='records', force_ascii=False))}
+        response = {"listaBinario": json.loads(df_response.to_json(orient='records', force_ascii=False))}
 
         return response
 
-    def buscar_predicao(self, texts):
-        """
-        Pega o modelo carregado e aplica em texts
-        """
-        logger.debug('Iniciando o predict...')
+    def toBinary(self, texts):
 
-        response = []
+        output = []
 
         for text in texts:
-            sentiment_dict = self.model.polarity_scores(text)
-        
-            # decide sentiment as positive, negative and neutral
-            if sentiment_dict['compound'] >= 0.05:
-                response.append("Positive")
-        
-            elif sentiment_dict['compound'] <= - 0.05:
-                response.append("Negative")
-        
-            else:
-                response.append("Neutral")
 
-        return response
+            ascii_list = []
+            response = []
+
+            for i in text:
+                # ord retorna o valor ASCII correspondente
+                ascii_list.append(ord(i))
+            for i in ascii_list:
+                response.append(int(bin(i)[2:]))
+            output.append(response)
+
+        return output
